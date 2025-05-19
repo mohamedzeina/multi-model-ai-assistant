@@ -4,6 +4,7 @@ from pydub import AudioSegment
 from pydub.playback import play
 from io import BytesIO
 import os
+import ollama
 import google.generativeai as genai
 
 
@@ -50,7 +51,20 @@ def transcribe(audio_path):
     return transcription.text
 
 
-
+def convert_to_gemini_format(history):
+    """Convert chat history to Gemini's expected format"""
+    gemini_messages = []
+    for message in history:
+        if message["role"] == "user":
+            gemini_messages.append({"role": "user", "parts": [message["content"]]})
+        elif message["role"] == "assistant":
+            gemini_messages.append({"role": "model", "parts": [message["content"]]})
+    
+    # Add system prompt to first user message if available
+    if gemini_messages and gemini_messages[0]["role"] == "user":
+        gemini_messages[0]["parts"][0] = f"Please follow these instructions: {sysPrompt}\n\nUser's question: {gemini_messages[0]['parts'][0]}"
+    
+    return gemini_messages
 
 
 
