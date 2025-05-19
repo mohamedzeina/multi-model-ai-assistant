@@ -4,6 +4,7 @@ from pydub import AudioSegment
 from pydub.playback import play
 from io import BytesIO
 import os
+import gradio as gr
 import ollama
 import google.generativeai as genai
 
@@ -119,6 +120,94 @@ def chat(history, selected_model):
             yield history + [{"role": "assistant", "content": f"Error with Gemini model: {str(e)}\n\nPlease try another model or rephrase your question."}]
                 
         talker(response)
+        
+# Gradio UI
+with gr.Blocks(title="AI Assistant Hub") as ui:
+    gr.Markdown("# AI Assistant Hub\nChat with multiple AI models using text or voice")
+    
+    with gr.Row():
+        chatbot = gr.Chatbot(height=500, type="messages", elem_id="chatbox")
+        
+    with gr.Row():
+        with gr.Column(scale=6):
+            entry = gr.Textbox(
+            label=None,
+            placeholder="Type your message here..."
+            )
+
+        with gr.Column(scale=1):
+            submit_btn = gr.Button("Send", variant="primary")
+            
+    with gr.Row():
+        audio_input = gr.Microphone(
+        label="Speak to the assistant", 
+        type="filepath"
+        )
+        model_selector = gr.Dropdown(
+            ["GPT", "Ollama", "Gemini"], 
+            label="Select model", 
+            value="GPT",
+            interactive=True
+        )
+        clear = gr.Button("Clear Chat", variant="secondary")
+    
+    # Define handler functions within the Blocks context
+    def handle_text_input(message, history):
+        """Handle text input from the user"""
+        history = history or []
+        history.append({"role": "user", "content": message})
+        return "", history
+            
+    def handle_audio_input(audio_path, history):
+        """Handle audio input from the user"""
+        if not audio_path or not isinstance(audio_path, str) or not os.path.exists(audio_path):
+            return gr.update(), history  # Prevent triggering downstream if cleared
+    
+        history = history or []
+        text = transcribe(audio_path)
+        history.append({"role": "user", "content": text})
+        return gr.update(value=None), history  # Clear audio after handling
+
+    
+    # Event handlers
+    entry.submit(
+        handle_text_input, 
+        inputs=[entry, chatbot], 
+        outputs=[entry, chatbot]
+    ).then(
+        chat, 
+        inputs=[chatbot, model_selector], 
+        outputs=chatbot
+    )
+    
+    submit_btn.click(
+        handle_text_input, 
+        inputs=[entry, chatbot], 
+        outputs=[entry, chatbot]
+    ).then(
+        chat, 
+        inputs=[chatbot, model_selector], 
+        outputs=chatbot
+    )
+    
+    audio_input.change(
+        handle_audio_input, 
+        inputs=[audio_input, chatbot], 
+        outputs=[audio_input, chatbot]
+    ).then(
+        chat, 
+        inputs=[chatbot, model_selector], 
+        outputs=chatbot
+)
+    
+    # Clear button handler
+    clear.click(lambda: [], outputs=chatbot, queue=False)
+    
+    # Reset chatbot history when the model is changed
+    model_selector.change(lambda: ([], None, None), outputs=[chatbot, audio_input, entry], queue=False)
+
+# Launch the Gradio UI
+ui.launch(inbrowser=True)
 
 
 
