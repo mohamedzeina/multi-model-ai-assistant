@@ -77,10 +77,10 @@ This app uses **LLaMA 3.2**, running locally through [Ollama](https://ollama.com
 This app uses OpenAI and Google APIs for GPT and Gemini support
 
 1. **OpenAI API Key**
-   Get your key from [OpenAI](https://platform.openai.com/account/api-keys)
+   Get your key from [https://platform.openai.com/account/api-keys](https://platform.openai.com/account/api-keys)
    
 2. **Google API Key (Gemini)**
-   Get your key from [Gemini](https://makersuite.google.com/app/apikey)
+   Get your key from [https://makersuite.google.com/app/apikey](https://makersuite.google.com/app/apikey)
    
 3. **Add a .env file in the root directory:**
     ```env
