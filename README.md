@@ -60,7 +60,6 @@ This app uses **LLaMA 3.2**, running locally through [Ollama](https://ollama.com
    Download Ollama from [https://ollama.com](https://ollama.com) for your OS.
 
 2. **Start the Ollama Server**
-
    ```bash
    ollama serve
    ```
@@ -70,6 +69,45 @@ This app uses **LLaMA 3.2**, running locally through [Ollama](https://ollama.com
    ollama pull llama3.2
    ```
 
-4. Confirm Ollama is running at:
-   [](http://localhost:11434)
+4. **Confirm Ollama is running at:**
+   [Ollama](http://localhost:11434)
    
+## API Key Setup
+
+This app uses OpenAI and Google APIs for GPT and Gemini support
+
+1. **OpenAI API Key**
+   Get your key from [OpenAI](https://platform.openai.com/account/api-keys)
+   
+2. **Google API Key (Gemini)**
+   Get your key from [Gemini](https://makersuite.google.com/app/apikey)
+   
+3. **Add a .env file in the root directory:**
+    ```env
+   OPENAI_API_KEY=your-openai-key-here
+   GOOGLE_API_KEY=your-google-api-key-here
+   ```
+    
+## Installation
+
+1. **Clone the repository:**
+    ```bash
+   git clone https://github.com/yourusername/ai-assistant-hub.git
+   cd ai-assistant-hub
+   ```
+    
+2. **Create the Conda environment**
+   Make sure you have [Anaconda](https://www.anaconda.com/) or [Miniconda](https://www.anaconda.com/docs/getting-started/miniconda/main) installed.
+    ```bash
+   conda env create -f environment.yml
+   ```
+    
+3. **Activate the environment**
+    ```bash
+   conda activate ai-assistant
+   ```
+    
+4. **Run the app**
+   ```bash
+   python assistant.py
+   ```
