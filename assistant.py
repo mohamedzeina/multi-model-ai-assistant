@@ -7,6 +7,30 @@ import os
 import gradio as gr
 import ollama
 import google.generativeai as genai
+import subprocess
+
+
+# First verify ffmpeg/ffprobe is installed and get exact paths
+try:
+    ffmpeg_path = subprocess.check_output(['which', 'ffmpeg']).decode('utf-8').strip()
+    ffprobe_path = subprocess.check_output(['which', 'ffprobe']).decode('utf-8').strip()
+    print(f"Found ffmpeg at: {ffmpeg_path}")
+    print(f"Found ffprobe at: {ffprobe_path}")
+except Exception as e:
+    print(f"Error finding ffmpeg/ffprobe: {e}")
+    print("Falling back to default paths")
+    ffmpeg_path = "/opt/homebrew/bin/ffmpeg"
+    ffprobe_path = "/opt/homebrew/bin/ffprobe"
+
+# Configure paths before importing pydub
+os.environ["PATH"] += os.pathsep + os.path.dirname(ffmpeg_path)
+os.environ["FFMPEG_BINARY"] = ffmpeg_path
+os.environ["FFPROBE_BINARY"] = ffprobe_path
+
+# Configure pydub directly
+AudioSegment.converter = ffmpeg_path
+AudioSegment.ffmpeg = ffmpeg_path
+AudioSegment.ffprobe = ffprobe_path
 
 
 # Constants 
