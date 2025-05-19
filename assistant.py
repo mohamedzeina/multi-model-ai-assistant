@@ -38,3 +38,13 @@ def talker(message):
         play(audio)
     except Exception as e:
         print(f"[Talker Error] {e}")
+        
+
+def transcribe(audio_path):
+    """Function to transcribe audio using OpenAI's Whisper API"""
+    with open(audio_path, "rb") as audio_file:
+        transcription = openai.audio.transcriptions.create(
+            model="whisper-1",
+            file=audio_file
+        )
+    return transcription.text
